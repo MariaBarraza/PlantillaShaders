@@ -100,7 +100,15 @@ Shader::Shader(const char * rutaVertex, const char * rutaFragment)
 
 }
 
+void Shader::enlazar()
+{
+	glUseProgram(shaderID);
+}
 
+void Shader::desenlazar()
+{
+	glUseProgram(0);
+}
 //4.-Verificar errores de compilacion
 void Shader::verificarComplicacion(GLuint id)
 {
