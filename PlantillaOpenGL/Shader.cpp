@@ -79,6 +79,25 @@ Shader::Shader(const char * rutaVertex, const char * rutaFragment)
 	glCompileShader(vertexShaderID);
 	glCompileShader(fragmentShaderID);
 
+	//4.-Verificar los errores de compilacion
+	verificarComplicacion(vertexShaderID);
+	verificarComplicacion(fragmentShaderID);
+
+	//5.-Adjuntar shaders al programa,se ocupa el id del programa y el apuntador al shader
+	//usualmente se usan en el orden vertex y fragment pero esto no afecta
+	glAttachShader(shaderID,vertexShaderID);
+	glAttachShader(shaderID, fragmentShaderID);
+
+	//6.-Vincular el programa, aqui se vincula el shader a c
+	glLinkProgram(shaderID);
+
+	//7.-Verificar la vinculacion
+	verificarVinculacion(shaderID);
+
+	//8.-Usar el programa, en este momento se le dice que todo lo que tenga que ver con shaders lo va a mandar a este shader
+	glUseProgram(shaderID);
+
+
 }
 
 
@@ -88,6 +107,45 @@ void Shader::verificarComplicacion(GLuint id)
 	//glfalse es = 0
 	GLint resultado = GL_FALSE;
 	//se conoce como log al guardar texto en la ejecucion de un programa
-	int longitudLog = 0;
+	GLint longitudLog = 0;
 
+	//esta funcion trae informacion del shades, propiedades ya establecidas
+	//primero es el id del shader despues lo que se quiere obtener y al final la direccion de memoria donde se va a guardar
+	glGetShaderiv(id, GL_COMPILE_STATUS, &resultado);
+	glGetShaderiv(id, GL_INFO_LOG_LENGTH, &longitudLog);
+
+	//los vectores son listas de c++
+	if (longitudLog > 0)
+	{
+		//asi se declaran  los vectores, va a ser un vector tipo char, que se llamara mensaje error y tendra tantos elementos como la longitud del log
+		vector<char> mensajeError(longitudLog);
+		//aqui se obtiene el log, primero el id, despues el tamaño del buffer (que tamaño tiene el log),
+		glGetShaderInfoLog(id,longitudLog,NULL,&mensajeError[0]);
+
+		//iteradores para imprimir todos los caracteres
+		//el primer parametro del for seria un iterador constante, que seria igual al inicio del vector, se usa para cuando se trabaja con iteradores
+		//en este caso el i++ es una sobrecarga de operador para que pase al siguiente
+		for (vector<char>::const_iterator i = mensajeError.begin(); i != mensajeError.end(); i++)
+		{
+			//se desapunta a i para imprimir el mensaje de error
+			cout << *i;
+		}
+	}
+}
+
+void Shader::verificarVinculacion(GLuint id)
+{
+	GLint estadoVinculacion, estadoValidacion;
+	//se obtiene lnformacion del status de conexion
+	glGetProgramiv(id, GL_LINK_STATUS, &estadoVinculacion);
+	if (estadoVinculacion == GL_FALSE)
+	{
+		cout << "no se pudo vincular programa" << endl;
+	}
+
+	glGetProgramiv(id, GL_VALIDATE_STATUS, &estadoValidacion);
+	if (estadoValidacion == GL_FALSE)
+	{
+		cout << "no se pudo validad la vinculacion" << endl;
+	}
 }
