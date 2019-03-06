@@ -19,7 +19,7 @@ Shader::Shader(const char * rutaVertex, const char * rutaFragment)
 	//ios = input output string
 	ifstream vertexShaderStream(rutaVertex, ios::in);
 	//aqui se verifica si se pudo abrir el stream
-	if (vertexShaderStream.is_open)
+	if (vertexShaderStream.is_open())
 	{
 		//como lee linea por linea se declara una linea actual
 		string linea;
